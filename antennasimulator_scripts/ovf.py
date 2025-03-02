@@ -16,9 +16,9 @@ class Ovf:
         
         try:
             idx = text.index('xnodes:')
-            self.I = int(text[idx + 1])
-            self.J = int(text[idx + 4])
-            self.K = int(text[idx + 7])
+            self.Nx = int(text[idx + 1])
+            self.Ny = int(text[idx + 4])
+            self.Nz = int(text[idx + 7])
             
             idx = text.index('xstepsize:')
             self.dx = float(text[idx + 1])
@@ -40,7 +40,7 @@ class Ovf:
                 data_start = i + 1
                 if 'Text' in line:# Text módban van elmentve az adat
                     data = np.loadtxt(self.filename, comments='#', skiprows=data_start)
-                    data = data.reshape((self.I, self.J, self.K, 3), order='F')
+                    data = data.reshape((self.Nx, self.Ny, self.Nz, 3), order='F')
                     self.X, self.Y, self.Z = np.moveaxis(data, -1, 0)
                 elif 'Binary' in line:#Binary módban van elmentve az adat
                     with open(self.filename, 'rb') as file:
@@ -49,14 +49,14 @@ class Ovf:
                         control = np.fromfile(file, dtype=np.float32, count=1)[0]
                         if control != 1234567:
                             raise ValueError(f"Incorrect control sequence, expected 1234567, received {control}")
-                        floats = np.fromfile(file, dtype=np.float32)[:-9].reshape((3, self.I * self.J * self.K), order='F')
-                        self.X, self.Y, self.Z = [arr.reshape((self.I, self.J, self.K), order='F') for arr in floats]
+                        floats = np.fromfile(file, dtype=np.float32)[:-9].reshape((3, self.Nx * self.Ny * self.Nz), order='F')
+                        self.X, self.Y, self.Z = [arr.reshape((self.Nx, self.Ny, self.Nz), order='F') for arr in floats]
                 else:
                     raise ValueError("Data section not found in OVF file.")
                 break
             
     
-    def write_ovf(self, filename, title, unit, label):
+    def write_ovf(self, filename, title, unit='T', label='B'):
         with open(filename, 'w') as file:
             file.write("# OOMMF OVF 2.0\n")
             file.write("# Segment count: 1\n")
