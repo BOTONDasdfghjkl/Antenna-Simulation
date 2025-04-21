@@ -20,7 +20,7 @@ function generate_mumax_sweep(dr_ohf,dr_mx3,f,CPW_thickness,dx,dy,dz,Nx,Ny,Nz)
             "dy := " + string(num2str(dy)), ...
             "dz := " + string(num2str(dz))
         };
-        newfile = ['mumax_f',num2str(i),'.'];    % new filename with index
+        newfile = ['mumax_f',num2str(i),'.mx3'];    % new filename with index
 
         lines(line_idx) = cellstr(assignment);   % replace full line with assignment
         
