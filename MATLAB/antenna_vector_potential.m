@@ -1,5 +1,5 @@
-function antenna_vector_potential(timesteps,CPW_thickness,freq,dr_compressed,dr_save)
-
+function antenna_vector_potential(timesteps,CPW_thickness,freq,dr_compressed,dr_save,PBY)
+PBY=PBY*2;
 cpw_pos = [1:5 26:30 51:55]+222; % position of CPW lines
 % cpw_pos = [1:5 26:30 51:55]+222-105; % position of CPW2
 
@@ -27,7 +27,6 @@ for i_d=1:length(CPW_thickness)         % loop through thicknesses
     A_ = Ms*mu0/(4*pi)*dx*dy*dz;    % multiplicative factor in vector potential
 
     %% calculate distance kernel in the plane above YIG, restricted to CPW
-    PBY = 20;
     x_ = (1:I+cpw_pos(end)-cpw_pos(1))*dx;
     z_ = (1:K)*dz;
     y_ = (1:J*PBY)*dy;

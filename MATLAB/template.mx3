@@ -11,7 +11,7 @@
 @dz
 setgridsize(Nx, Ny, Nz)
 setcellsize(dx, dy, dz)
-setPBC(0,49,0)
+@PBC
 
 
 
