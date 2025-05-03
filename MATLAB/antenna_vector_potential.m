@@ -36,29 +36,13 @@ for i_d=1:length(CPW_thickness)         % loop through thicknesses
     [DX, DY, DZ] = meshgrid(dxx,dyy,dzz);
 
     distance_kernel = 1./sqrt(DX.^2 + DY.^2 + DZ.^2).^3; 
-    RTX = DX.*distance_kernel;
-    RTZ = DZ.*distance_kernel;
     for i_t = 1:timesteps   % loop through timesteps
-
-        %% repeat for PBC
-        Mx_ = repmat(Mx{i_t}(:,:,:),[PBY,1,1]);
-        % My_ = repmat(My{i_t}(:,:,:),[YY,1,1]);
-        Mz_ = repmat(Mz{i_t}(:,:,:),[PBY,1,1]);
-
-	    %% calculating vector potential (A) with convolution
-        A_cross_y = A_ * (convn(RTX,Mz_,'valid') - convn(RTZ,Mx_,'valid'));
-        AY(i_t,:) = A_cross_y(cpw_pos-cpw_pos(1)+1);
+        Mz_=repmat(Mz{i_t}(:,:,:),[PBY,1,1]);
+        AY(i_t,:)=vector_potential_convolution(repmat(Mx{i_t}(:,:,:),[PBY,1,1]),Mz_,DX.*distance_kernel,DZ.*distance_kernel,A_,cpw_pos);
     end
     figure(1000+i_d)
     imagesc(squeeze(Mz_(1,:,:))')
-    %% Approximate time derivative with central differences
-    dAY = diff(AY,1,1);
-
-    dtime = diff(time);
-    dtc = [dtime(1);dtime]+[dtime;dtime(end)];
-
-    Ey = -([dAY(1,:,:,:);dAY]+[dAY;dAY(end,:,:,:)])./dtc;
-   
+    Ey = time_derivative(AY);
     %% calculate the induced voltage in CPW
     L_CPW = 100e-6;
     V1 = -sum(Ey(:, 1:5) ,2)/5*L_CPW;
